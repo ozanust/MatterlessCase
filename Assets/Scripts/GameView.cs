@@ -1,26 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class GameView : MonoBehaviour
 {
 	[SerializeField]
 	private Camera cam;
 
-	// Inject
-    private IARService aRService;
+	[Inject]
+    private IARService arService;
 	private List<ARObject> arObjectList = new List<ARObject>();
 
 	private void Start()
 	{
-		aRService.AddCameraListener(OnCameraMove);
+		arService.AddCameraListener(OnCameraMove);
 	}
 
 	private void OnCameraMove()
 	{
 		foreach(ARObject aR in arObjectList)
 		{
-			aR.UpdateDistanceLabel(aRService.GetDistance(aR, cam));
+			aR.UpdateDistanceLabel(arService.GetDistance(aR, cam));
 		}
 	}
 

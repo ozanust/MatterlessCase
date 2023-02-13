@@ -8,9 +8,9 @@ public class ARService : IARService
 	public AREvent OnMove;
 
 	private ARSession arSession;
-	public ARService(ARSession arSession)
+	public ARService()
 	{
-		this.arSession = arSession;
+		
 	}
 
 	public float GetDistance(ARObject gameObject, Camera cam)
