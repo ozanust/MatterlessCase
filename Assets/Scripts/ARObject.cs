@@ -14,7 +14,7 @@ public class ARObject
 		get { return mainObject; }
 		set { mainObject = value; }
 	}
-    public ARObject(GameObject obj)
+	public ARObject(GameObject obj)
 	{
 		MainObject = obj;
 		distanceLabel = obj.GetComponentInChildren<TMP_Text>();

@@ -25,7 +25,7 @@ public class ARService : IARService, ITickable
 	public void Tick()
 	{
 		OnMove(null);
-		
+
 		if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
 		{
 			PlaceARObject();
@@ -47,7 +47,7 @@ public class ARService : IARService, ITickable
 		OnMove += aREvent;
 	}
 
-	public void SetARObject(GameObject arObject) 
+	public void SetARObject(GameObject arObject)
 	{
 		this.arObject = arObject;
 	}
@@ -67,7 +67,7 @@ public class ARService : IARService, ITickable
 			// Raycast hits are sorted by distance, so the first one
 			// will be the closest hit.
 			var hitPose = s_Hits[0].pose;
-		    GameObject obj = Object.Instantiate(arObject, hitPose.position, hitPose.rotation);
+			GameObject obj = Object.Instantiate(arObject, hitPose.position, hitPose.rotation);
 			ARObject aRObject = new ARObject(obj);
 			OnAddEvent(aRObject);
 		}

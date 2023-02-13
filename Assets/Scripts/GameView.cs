@@ -10,7 +10,7 @@ public class GameView : MonoBehaviour
 	private GameObject arObjPrototype;
 
 	[Inject]
-    private IARService arService;
+	private IARService arService;
 
 	private List<ARObject> arObjectList = new List<ARObject>();
 
@@ -23,7 +23,7 @@ public class GameView : MonoBehaviour
 
 	private void OnCameraMove(ARObject aRObject)
 	{
-		foreach(ARObject aR in arObjectList)
+		foreach (ARObject aR in arObjectList)
 		{
 			aR.UpdateDistanceLabel(arService.GetDistance(aR));
 		}
