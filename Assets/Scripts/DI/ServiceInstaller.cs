@@ -10,7 +10,7 @@ public class ServiceInstaller : MonoInstaller
 	private ARSession aRSession;
 	public override void InstallBindings()
 	{
-		Container.Bind(typeof(ARRaycastManager), typeof(Camera)).FromComponentInNewPrefab(aRSession).AsSingle();
+		Container.Bind(typeof(ARRaycastManager), typeof(Camera), typeof(ARPlaneManager)).FromComponentInNewPrefab(aRSession).AsSingle();
 		Container.Bind(typeof(IARService), typeof(ITickable)).To<ARService>().AsSingle();
 	}
 }

@@ -2,8 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 using Zenject;
 
+/// <summary>
+/// Manages and updates game view according to events from AR system.
+/// </summary>
 public class GameView : MonoBehaviour
 {
 	[SerializeField]
@@ -16,12 +20,34 @@ public class GameView : MonoBehaviour
 
 	private void Start()
 	{
-		arService.AddCameraListener(OnCameraMove);
-		arService.AddObjectAdditionListener(OnAddARObjEvent);
+		AddListeners();
 		arService.SetARObject(arObjPrototype);
 	}
 
-	private void OnCameraMove(ARObject aRObject)
+	/// <summary>
+	/// Assigns listeners to AR service.
+	/// </summary>
+	private void AddListeners()
+	{
+		ARObjectEvent objEvent = new ARObjectEvent();
+		objEvent.evt += OnAddARObjEvent;
+
+		AREvent camEvent = new AREvent();
+		camEvent.baseEvent += OnCameraMoveEvent;
+
+		ARPlaneEvent planeEvent = new ARPlaneEvent();
+		planeEvent.baseEvent += OnPlaneDetectedEvent;
+
+		arService.AddAREventListener(AREventType.ARCameraEvent, camEvent);
+		arService.AddAREventListener(AREventType.ARObjectEvent, objEvent);
+		arService.AddAREventListener(AREventType.ARPlaneEvent, planeEvent);
+	}
+
+	/// <summary>
+	/// Called on each frame from the Tick method of Zenject. Camera always moves in real-time.
+	/// Updates the distance label on each object that are placed on the physical world.
+	/// </summary>
+	private void OnCameraMoveEvent()
 	{
 		foreach (ARObject aR in arObjectList)
 		{
@@ -29,13 +55,18 @@ public class GameView : MonoBehaviour
 		}
 	}
 
-	private void OnAddARObjEvent(ARObject aRObject)
+	/// <summary>
+	/// Called when a new object placed on an AR plane, basically to physical world.
+	/// </summary>
+	/// <param name="aRObject">Newly placed object.</param>
+	private void OnAddARObjEvent(ARObject obj)
 	{
-		arObjectList.Add(aRObject);
+		arObjectList.Add(obj);
 	}
 
-	private void OnRemoveARObjEvent(ARObject aRObject)
+	private void OnPlaneDetectedEvent()
 	{
-		arObjectList.Remove(aRObject);
+		// listen ar plane manager
+		// tell user s/he can put object on it
 	}
 }

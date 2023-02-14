@@ -14,6 +14,7 @@ public class ARObject
 		get { return mainObject; }
 		set { mainObject = value; }
 	}
+
 	public ARObject(GameObject obj)
 	{
 		MainObject = obj;
