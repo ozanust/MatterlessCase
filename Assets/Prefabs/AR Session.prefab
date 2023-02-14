@@ -75,7 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ab0e80cee9cc1d44928bfe488dd1e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PointCloudPrefab: {fileID: 1854016325464908, guid: 0d4f49e744bffd14eb527ba76c9bba12,
+  m_PointCloudPrefab: {fileID: 1854016325464908, guid: 038e0b3fc00f03a44be8415e2b1a0fc6,
     type: 3}
 --- !u!114 &4245235639041044502
 MonoBehaviour:
