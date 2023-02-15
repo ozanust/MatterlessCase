@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// A soft representation of the AR gameobjects in the scene.
+/// </summary>
 public class ARObject
 {
 	private TMP_Text distanceLabel;

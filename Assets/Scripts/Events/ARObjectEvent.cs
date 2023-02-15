@@ -8,11 +8,11 @@ using System;
 /// </summary>
 public class ARObjectEvent : AREvent
 {
-	public ARObject updatedObject;
-	public Action<ARObject> evt;
+	public Pose objectPose;
+	public Action<Pose> evt;
 
 	public override void Callback()
 	{
-		evt?.Invoke(updatedObject);
+		evt?.Invoke(objectPose);
 	}
 }

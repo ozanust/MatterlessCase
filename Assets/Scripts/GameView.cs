@@ -15,13 +15,14 @@ public class GameView : MonoBehaviour
 
 	[Inject]
 	private IARService arService;
+	[Inject]
+	private IGameController gameController;
 
 	private List<ARObject> arObjectList = new List<ARObject>();
 
 	private void Start()
 	{
 		AddListeners();
-		arService.SetARObject(arObjPrototype);
 	}
 
 	/// <summary>
@@ -43,8 +44,16 @@ public class GameView : MonoBehaviour
 		arService.AddAREventListener(AREventType.ARPlaneEvent, planeEvent);
 	}
 
+	private void Update()
+	{
+		if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+		{
+			gameController.TryPlaceObject(Input.GetTouch(0).position);
+		}
+	}
+
 	/// <summary>
-	/// Called on each frame from the Tick method of Zenject. Camera always moves in real-time.
+	/// Calls on each frame from the Tick method of Zenject if AR Camera is active and working.
 	/// Updates the distance label on each object that are placed on the physical world.
 	/// </summary>
 	private void OnCameraMoveEvent()
@@ -56,12 +65,14 @@ public class GameView : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Called when a new object placed on an AR plane, basically to physical world.
+	/// Gets the pose data from ARService whenever a object placement request is successful and puts the object according to pose data.
 	/// </summary>
-	/// <param name="aRObject">Newly placed object.</param>
-	private void OnAddARObjEvent(ARObject obj)
+	/// <param name="pose">Pose data from raycast result.</param>
+	private void OnAddARObjEvent(Pose pose)
 	{
-		arObjectList.Add(obj);
+		GameObject obj = Instantiate(arObjPrototype, pose.position, pose.rotation);
+		ARObject aRObject = new ARObject(obj);
+		arObjectList.Add(aRObject);
 	}
 
 	private void OnPlaneDetectedEvent()

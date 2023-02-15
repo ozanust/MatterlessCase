@@ -12,5 +12,6 @@ public class ServiceInstaller : MonoInstaller
 	{
 		Container.Bind(typeof(ARRaycastManager), typeof(Camera), typeof(ARPlaneManager)).FromComponentInNewPrefab(aRSession).AsSingle();
 		Container.Bind(typeof(IARService), typeof(ITickable)).To<ARService>().AsSingle();
+		Container.Bind(typeof(IGameController)).To<GameController>().AsSingle();
 	}
 }

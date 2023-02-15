@@ -3,15 +3,12 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Zenject;
-using UnityEngine.UI;
-using System;
 
 public class ARService : IARService, ITickable
 {
 	private ARRaycastManager arRaycastManager;
 	private ARPlaneManager arPlaneManager;
 	private Camera arCamera;
-	private GameObject arObjectPrototype;
 
 	Dictionary<AREventType, AREvent> eventDict = new Dictionary<AREventType, AREvent>();
 	List<ARPlane> detectedARPlanes = new List<ARPlane>();
@@ -27,14 +24,9 @@ public class ARService : IARService, ITickable
 
 	public void Tick()
 	{
-		if (eventDict.ContainsKey(AREventType.ARCameraEvent))
+		if (arCamera.isActiveAndEnabled && eventDict.ContainsKey(AREventType.ARCameraEvent))
 		{
 			eventDict[AREventType.ARCameraEvent].Callback();
-		}
-
-		if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-		{
-			TryPlaceARObject();
 		}
 	}
 
@@ -49,16 +41,36 @@ public class ARService : IARService, ITickable
 		eventDict.Add(type, arEvent);
 	}
 
+	/// <summary>
+	/// Gets the distance between AR Camera and the specified AR game object. Returns Unity metrics which is equivalent to real world.
+	/// </summary>
+	/// <param name="gameObject"></param>
+	/// <returns></returns>
 	public float GetDistance(ARObject gameObject)
 	{
 		return Vector3.Distance(gameObject.MainObject.transform.position, arCamera.gameObject.transform.position);
 	}
 
-	public void SetARObject(GameObject arObject)
+	/// <summary>
+	/// Fires a raycast to real world and calls object placement event with the Pose info if ray hits any detected AR plane.
+	/// </summary>
+	/// <param name="touchPosition">2D touch position on screen.</param>
+	public void TryPlaceObject(Vector2 touchPosition)
 	{
-		arObjectPrototype = arObject;
+		List<ARRaycastHit> hits = new List<ARRaycastHit>();
+
+		if (arRaycastManager.Raycast(touchPosition, hits, TrackableType.PlaneWithinPolygon))
+		{
+			// Raycast hits are sorted by distance, so the first one will be the closest hit.
+			var hitPose = hits[0].pose;
+			OnPlaceEvent(hitPose);
+		}
 	}
 
+	/// <summary>
+	/// Calls on new AR plane detection. Notifies the view with the data.
+	/// </summary>
+	/// <param name="args">Detected AR planes data.</param>
 	private void OnPlaneDetected(ARPlanesChangedEventArgs args)
 	{
 		if(args.added.Count > detectedARPlanes.Count)
@@ -66,28 +78,14 @@ public class ARService : IARService, ITickable
 			ARPlaneEvent evt = (ARPlaneEvent)eventDict[AREventType.ARObjectEvent];
 			evt.Callback();
 		}
+
+		detectedARPlanes = args.added;
 	}
 
-	private void OnAddEvent(ARObject gameObject)
+	private void OnPlaceEvent(Pose pose)
 	{
 		ARObjectEvent evt = (ARObjectEvent)eventDict[AREventType.ARObjectEvent];
-		evt.updatedObject = gameObject;
+		evt.objectPose = pose;
 		evt.Callback();
-	}
-
-	private void TryPlaceARObject()
-	{
-		Vector2 touchPosition = Input.GetTouch(0).position;
-		List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
-
-		if (arRaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
-		{
-			// Raycast hits are sorted by distance, so the first one
-			// will be the closest hit.
-			var hitPose = s_Hits[0].pose;
-			GameObject obj = UnityEngine.Object.Instantiate(arObjectPrototype, hitPose.position, hitPose.rotation);
-			ARObject aRObject = new ARObject(obj);
-			OnAddEvent(aRObject);
-		}
 	}
 }
