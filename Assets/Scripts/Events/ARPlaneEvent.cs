@@ -9,8 +9,11 @@ using System;
 /// </summary>
 public class ARPlaneEvent : AREvent
 {
+	public ARPlanesChangedEventArgs planesData;
+	public Action<ARPlanesChangedEventArgs> evt;
 	public override void Callback()
 	{
 		base.Callback();
+		evt?.Invoke(planesData);
 	}
 }

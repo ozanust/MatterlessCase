@@ -75,7 +75,8 @@ public class ARService : IARService, ITickable
 	{
 		if(args.added.Count > detectedARPlanes.Count)
 		{
-			ARPlaneEvent evt = (ARPlaneEvent)eventDict[AREventType.ARObjectEvent];
+			ARPlaneEvent evt = (ARPlaneEvent)eventDict[AREventType.ARPlaneEvent];
+			evt.planesData = args;
 			evt.Callback();
 		}
 

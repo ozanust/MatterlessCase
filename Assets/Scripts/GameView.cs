@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using Zenject;
+using TMPro;
 
 /// <summary>
 /// Manages and updates game view according to events from AR system.
@@ -12,6 +13,10 @@ public class GameView : MonoBehaviour
 {
 	[SerializeField]
 	private GameObject arObjPrototype;
+	[SerializeField]
+	private TMP_Text informativeText;
+	[SerializeField]
+	private CanvasGroup informativeTextCanvas;
 
 	[Inject]
 	private IARService arService;
@@ -19,6 +24,10 @@ public class GameView : MonoBehaviour
 	private IGameController gameController;
 
 	private List<ARObject> arObjectList = new List<ARObject>();
+
+	private float informativeTextFadeOutTime = 2f;
+	private float informativeTextOnScreenTime = 5f;
+	private string informativeTextOnPlaneDetectedText = "A surface detected! You can start measuring distances by placing objects.";
 
 	private void Start()
 	{
@@ -37,7 +46,7 @@ public class GameView : MonoBehaviour
 		camEvent.baseEvent += OnCameraMoveEvent;
 
 		ARPlaneEvent planeEvent = new ARPlaneEvent();
-		planeEvent.baseEvent += OnPlaneDetectedEvent;
+		planeEvent.evt += OnPlaneDetectedEvent;
 
 		arService.AddAREventListener(AREventType.ARCameraEvent, camEvent);
 		arService.AddAREventListener(AREventType.ARObjectEvent, objEvent);
@@ -75,9 +84,17 @@ public class GameView : MonoBehaviour
 		arObjectList.Add(aRObject);
 	}
 
-	private void OnPlaneDetectedEvent()
+	/// <summary>
+	/// Gets detected/removed/updated plane data from ARService.
+	/// </summary>
+	/// <param name="args">Planes data.</param>
+	private void OnPlaneDetectedEvent(ARPlanesChangedEventArgs args)
 	{
-		// listen ar plane manager
-		// tell user s/he can put object on it
+		// Inform the user after detecting the first plane
+		if (args.added.Count == 1)
+		{
+			informativeText.text = informativeTextOnPlaneDetectedText;
+			LeanTween.delayedCall(informativeTextOnScreenTime, () => LeanTween.alphaCanvas(informativeTextCanvas, 0, informativeTextFadeOutTime));
+		}
 	}
 }
